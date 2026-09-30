@@ -1,0 +1,894 @@
+{
+  "name": "RAG - Ingestion Multi-Format",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rag-ingestion",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -688,
+        304
+      ],
+      "id": "a26c5907-e639-4d02-bd78-8adcbc63b16e",
+      "name": "Webhook - Upload Fichier",
+      "webhookId": "fbc66f6b-74eb-43b8-9914-7ff89496fa27"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "get-mimetype",
+              "name": "mimeType",
+              "value": "={{ $binary?.file?.mimeType ?? $json.body?.mimeType ?? 'application/pdf' }}",
+              "type": "string"
+            },
+            {
+              "id": "get-filename",
+              "name": "fileName",
+              "value": "={{ $binary?.data?.fileName ?? $json.body?.fileName ?? 'fichier' }}",
+              "type": "string"
+            },
+            {
+              "id": "get-extension",
+              "name": "extension",
+              "value": "={{ ($binary?.data?.fileName ?? $json.body?.fileName ?? '').split('.').pop().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "1a83c810-79cf-4554-954b-a9ebb3246fdc",
+              "name": "file",
+              "value": "={{ $binary.data0 }}",
+              "type": "binary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -464,
+        304
+      ],
+      "id": "b6580b35-5483-4273-bbde-df9bbb433667",
+      "name": "Détecter Type Fichier"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "rule-pdf",
+                    "leftValue": "={{ $json.extension }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "rule-pptx",
+                    "leftValue": "={{ $json.extension }}",
+                    "rightValue": "pptx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "rule-docx",
+                    "leftValue": "={{ $json.extension }}",
+                    "rightValue": "docx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "rule-image",
+                    "leftValue": "={{ $json.extension }}",
+                    "rightValue": "jpg",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "rule-png",
+                    "leftValue": "={{ $json.extension }}",
+                    "rightValue": "png",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "rule-txt",
+                    "leftValue": "={{ $json.extension }}",
+                    "rightValue": "txt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        304
+      ],
+      "id": "3f1a00c6-ccf3-4464-9965-45cfee627c80",
+      "name": "Switch - Type Fichier"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0c0ed333-ed06-4ac9-94a3-fe80560ffec5",
+      "name": "📄 Extraire PDF"
+    },
+    {
+      "parameters": {
+        "operation": "fromFile"
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        144
+      ],
+      "id": "207517ad-e050-4985-bd28-c5e9b6cc7f90",
+      "name": "📊 Extraire PowerPoint"
+    },
+    {
+      "parameters": {
+        "operation": "fromFile"
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        288
+      ],
+      "id": "7017cc41-0c97-4cb1-a97d-94f0ff967648",
+      "name": "📝 Extraire Word"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Extrait et retranscris TOUT le texte visible dans cette image de cours. Inclus tous les titres, paragraphes, listes, tableaux et formules. Ne résume pas, retranscris mot pour mot.",
+        "options": {
+          "systemMessage": "Tu es un OCR intelligent. Tu lis les images de cours et retranscris leur contenu textuel exact en français. Tu ne résumes jamais, tu retranscris tout."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        432
+      ],
+      "id": "d75c1ff1-bcb0-4333-b082-7686a43b59bf",
+      "name": "🖼️ OCR Image JPG (Gemini Vision)"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Extrait et retranscris TOUT le texte visible dans cette image de cours. Inclus tous les titres, paragraphes, listes, tableaux et formules. Ne résume pas, retranscris mot pour mot.",
+        "options": {
+          "systemMessage": "Tu es un OCR intelligent. Tu lis les images de cours et retranscris leur contenu textuel exact en français. Tu ne résumes jamais, tu retranscris tout."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        704
+      ],
+      "id": "258244d9-dd40-4ea8-b7b1-0a3dc11ec185",
+      "name": "🖼️ OCR Image PNG (Gemini Vision)"
+    },
+    {
+      "parameters": {
+        "operation": "fromFile"
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        992
+      ],
+      "id": "f5f9a10c-f619-41f0-aabf-a03af7faf2c5",
+      "name": "📋 Extraire TXT"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "normalize-text",
+              "name": "extractedText",
+              "value": "={{ $json.text ?? $json.output ?? $json.data ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "normalize-source",
+              "name": "sourceFile",
+              "value": "={{ $('Détecter Type Fichier').item.json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "normalize-type",
+              "name": "fileType",
+              "value": "={{ $('Détecter Type Fichier').item.json.extension.toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "normalize-date",
+              "name": "ingestedAt",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        512
+      ],
+      "id": "c86727b3-42bd-42b5-b5ba-b26b3fadf70b",
+      "name": "Normaliser Texte Extrait"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "clean-final",
+              "name": "cleanText",
+              "value": "={{ $json.extractedText.replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, ' ').replace(/\\s{4,}/g, ' ').trim().slice(0, 50000) }}",
+              "type": "string"
+            },
+            {
+              "id": "wordcount",
+              "name": "wordCount",
+              "value": "={{ $json.extractedText.split(' ').length }}",
+              "type": "number"
+            },
+            {
+              "id": "source-meta",
+              "name": "sourceFile",
+              "value": "={{ $json.sourceFile }}",
+              "type": "string"
+            },
+            {
+              "id": "type-meta",
+              "name": "fileType",
+              "value": "={{ $json.fileType }}",
+              "type": "string"
+            },
+            {
+              "id": "date-meta",
+              "name": "ingestedAt",
+              "value": "={{ $json.ingestedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        512
+      ],
+      "id": "19fc4514-afd1-4f91-abc0-36ebcc4bf6c2",
+      "name": "Nettoyer + Métadonnées"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "check-empty",
+              "leftValue": "={{ $json.cleanText }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        704,
+        512
+      ],
+      "id": "7f4a5bb4-7b78-43f4-a9ff-3f022454a6b7",
+      "name": "Contenu Valide ?"
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        928,
+        560
+      ],
+      "id": "f4f808ef-b070-480d-ae6e-f3d4cd8659e0",
+      "name": "Text Splitter 500/50"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "id",
+          "value": "studybuddy-index"
+        },
+        "options": {
+          "pineconeNamespace": "={{ $('Nettoyer + Métadonnées').item.json.sourceFile }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        64
+      ],
+      "id": "ed0ea8cf-0c26-4e3c-a422-9a1b888aa550",
+      "name": "Pinecone - Stocker Vecteurs",
+      "credentials": {
+        "pineconeApi": {
+          "id": "b9CR93TlXtpbxuBr",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"✅ Fichier ingéré avec succès !\",\n  \"details\": {\n    \"fileName\": \"{{ $('Nettoyer + Métadonnées').item.json.sourceFile }}\",\n    \"fileType\": \"{{ $('Nettoyer + Métadonnées').item.json.fileType }}\",\n    \"wordCount\": {{ $('Nettoyer + Métadonnées').item.json.wordCount }},\n    \"ingestedAt\": \"{{ $('Nettoyer + Métadonnées').item.json.ingestedAt }}\"\n  }\n}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1344,
+        400
+      ],
+      "id": "25f66678-dee9-43e9-a435-fbabd9fd1c19",
+      "name": "✅ Respond - Succès"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"message\": \"❌ Le fichier est vide ou illisible\",\n  \"fileName\": \"{{ $('Détecter Type Fichier').item.json.fileName }}\",\n  \"conseil\": \"Vérifie que ton fichier contient du texte lisible\"\n}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1344,
+        608
+      ],
+      "id": "da4cdf3a-860d-4ad4-8c5d-1a80ceb82468",
+      "name": "❌ Respond - Fichier Vide"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"message\": \"❌ Format de fichier non supporté\",\n  \"fileType\": \"{{ $('Détecter Type Fichier').item.json.extension }}\",\n  \"formatsAcceptes\": [\"pdf\", \"pptx\", \"docx\", \"jpg\", \"jpeg\", \"png\", \"txt\"]\n}",
+        "options": {
+          "responseCode": 415,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        272,
+        800
+      ],
+      "id": "255270bc-3b9a-4b86-937a-024f189dea9c",
+      "name": "❌ Respond - Format Non Supporté"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        240
+      ],
+      "id": "86566936-dcc0-4771-aa81-c2eea1818a4e",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BAg9jF4JWqiF04pe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        288
+      ],
+      "id": "4de30abf-483f-43fc-8ab9-6406cce11946",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "meta-llama/llama-3.2-11b-vision-instruct",
+          "mode": "list",
+          "cachedResultName": "meta-llama/llama-3.2-11b-vision-instruct"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        576
+      ],
+      "id": "a20a8487-b537-42af-88d1-f654b764d2e7",
+      "name": "OpenAI Vision - JPG",
+      "credentials": {
+        "openAiApi": {
+          "id": "tJbBvqye9aevPfkc",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "meta-llama/llama-3.2-11b-vision-instruct",
+          "mode": "list",
+          "cachedResultName": "meta-llama/llama-3.2-11b-vision-instruct"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        864
+      ],
+      "id": "fca6a7b4-4e59-4845-80a3-bcf9a2ef4f8f",
+      "name": "OpenAI Vision - PNG",
+      "credentials": {
+        "openAiApi": {
+          "id": "tJbBvqye9aevPfkc",
+          "name": "OpenAI account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Upload Fichier": {
+      "main": [
+        [
+          {
+            "node": "Détecter Type Fichier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Détecter Type Fichier": {
+      "main": [
+        [
+          {
+            "node": "Switch - Type Fichier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Type Fichier": {
+      "main": [
+        [
+          {
+            "node": "📄 Extraire PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📊 Extraire PowerPoint",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📝 Extraire Word",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🖼️ OCR Image JPG (Gemini Vision)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🖼️ OCR Image PNG (Gemini Vision)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📋 Extraire TXT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "❌ Respond - Format Non Supporté",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📄 Extraire PDF": {
+      "main": [
+        [
+          {
+            "node": "Normaliser Texte Extrait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Extraire PowerPoint": {
+      "main": [
+        [
+          {
+            "node": "Normaliser Texte Extrait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Extraire Word": {
+      "main": [
+        [
+          {
+            "node": "Normaliser Texte Extrait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🖼️ OCR Image JPG (Gemini Vision)": {
+      "main": [
+        [
+          {
+            "node": "Normaliser Texte Extrait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🖼️ OCR Image PNG (Gemini Vision)": {
+      "main": [
+        [
+          {
+            "node": "Normaliser Texte Extrait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Extraire TXT": {
+      "main": [
+        [
+          {
+            "node": "Normaliser Texte Extrait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normaliser Texte Extrait": {
+      "main": [
+        [
+          {
+            "node": "Nettoyer + Métadonnées",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nettoyer + Métadonnées": {
+      "main": [
+        [
+          {
+            "node": "Contenu Valide ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contenu Valide ?": {
+      "main": [
+        [
+          {
+            "node": "Pinecone - Stocker Vecteurs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "❌ Respond - Fichier Vide",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Splitter 500/50": {
+      "ai_textSplitter": [
+        []
+      ]
+    },
+    "Pinecone - Stocker Vecteurs": {
+      "main": [
+        [
+          {
+            "node": "✅ Respond - Succès",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone - Stocker Vecteurs",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone - Stocker Vecteurs",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Vision - JPG": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🖼️ OCR Image JPG (Gemini Vision)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Vision - PNG": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🖼️ OCR Image PNG (Gemini Vision)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c269a816-7fdb-48ed-aac0-a9cd364229ce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "83f300f482867ff66a79cc8e8bee33de959ad91758a1b4a02ff5392eee1c0303"
+  },
+  "id": "GCp4HtkbXjtmII6Q",
+  "tags": []
+}

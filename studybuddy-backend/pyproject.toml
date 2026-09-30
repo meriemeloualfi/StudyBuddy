@@ -1,0 +1,17 @@
+[project]
+name = "studybuddy-backend"
+version = "1.0.0"
+description = "StudyBuddy AI - Tuteur pédagogique basé sur RAG"
+authors = [{ name = "EL OUALFI MERIEM & BOUTARFA Wafae" }]
+requires-python = ">=3.10"
+
+[tool.dependencies]
+fastapi = "*"
+uvicorn = "*"
+sqlalchemy = "*"
+httpx = "*"
+requests = "*"
+python-jose = { extras = ["cryptography"] }
+passlib = { extras = ["bcrypt"] }
+python-multipart = "*"
+pydantic = "*"

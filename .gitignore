@@ -1,0 +1,19 @@
+# Secrets
+.env
+*.env
+.env.*
+
+# Dépendances
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Base de données locale
+*.db
+
+# Build et divers
+build/
+dist/
+.DS_Store
